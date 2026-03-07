@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AccountResponseDtoSchema } from './Account.js';
 
 export const UserEntitySchema = z.object({
   id: z.uuid(),
@@ -22,7 +23,12 @@ export const UserResponseDtoSchema = UserEntitySchema.omit({
     password: true
 })
 
+export const UserWithAccountSchema = UserResponseDtoSchema.extend({
+  account: AccountResponseDtoSchema
+});
+
 export type UserEntity = z.infer<typeof UserEntitySchema>;
 export type CreateUserDTO = z.infer<typeof CreateUserDtoSchema>;
 export type UpdateUserDTO = z.infer<typeof UpdateUserDtoSchema>;
 export type UserResponseDTO = z.infer<typeof UserResponseDtoSchema>;
+export type UserWithAccountDTO = z.infer<typeof UserWithAccountSchema>;

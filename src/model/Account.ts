@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { OperationEntitySchema } from './Operation.js';
 
 export const AccountEntitySchema = z.object({
     id: z.uuid(),
@@ -8,10 +9,14 @@ export const AccountEntitySchema = z.object({
 });
 
 export const CreateAccountDtoSchema = AccountEntitySchema.pick({
-    id: true
+    userId: true
 });
 
 export const AccountResponseDtoSchema = AccountEntitySchema;
+
+export const AccountWithOperationsSchema = AccountResponseDtoSchema.extend({
+  operations: z.array(OperationEntitySchema) 
+});
 
 export type AccountEntity = z.infer<typeof AccountEntitySchema>;
 export type AccountResponseDTO = z.infer<typeof AccountResponseDtoSchema>;
