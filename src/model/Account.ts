@@ -9,8 +9,15 @@ export const AccountEntitySchema = z.object({
 });
 
 export const CreateAccountDtoSchema = AccountEntitySchema.pick({
-    userId: true
+    userId: true,
+    balance: true
 });
+
+export const UpdateAccountBalanceDtoSchema = AccountEntitySchema.pick({
+    balance: true
+});
+
+export type UpdateAccountBalanceDTO = z.infer<typeof UpdateAccountBalanceDtoSchema>;
 
 export const AccountResponseDtoSchema = AccountEntitySchema;
 
@@ -19,4 +26,6 @@ export const AccountWithOperationsSchema = AccountResponseDtoSchema.extend({
 });
 
 export type AccountEntity = z.infer<typeof AccountEntitySchema>;
+export type CreateAccountDTO = z.infer<typeof CreateAccountDtoSchema>;
+export type UpdateAccountDTO = z.infer<typeof UpdateAccountBalanceDtoSchema>
 export type AccountResponseDTO = z.infer<typeof AccountResponseDtoSchema>;
