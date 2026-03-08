@@ -1,6 +1,7 @@
 import type { Repository } from "../Repository.js";
 import { prisma } from "../../lib/prisma.js";
 import type { CreateUserDTO, UpdateUserDTO, UserEntity, UserWithAccountDTO } from "../../model/User.js";
+import type { User } from "../../generated/prisma/browser.js";
 
 export class UserRepository implements Repository<CreateUserDTO, UpdateUserDTO, UserWithAccountDTO> {
     async create(user: CreateUserDTO) {
@@ -56,6 +57,13 @@ export class UserRepository implements Repository<CreateUserDTO, UpdateUserDTO, 
             }
         })
         return userFound
+    }
+
+    async findByEmail(email: string) {
+        const userFound: User = await prisma.user.findUnique({
+            where: {email}
+        })
+        return userFound as UserEntity | null
     }
 
     async delete(id: string) {
