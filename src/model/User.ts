@@ -17,6 +17,11 @@ export const CreateUserDtoSchema = UserEntitySchema.omit({
     password: z.string().min(6, "A senha deve conter pelo menos 6 caracteres")
 })
 
+export const LoginUserDtoSchema = CreateUserDtoSchema.pick({
+  email: true,
+  password: true
+})
+
 export const UpdateUserDtoSchema = CreateUserDtoSchema.partial()
 
 export const UserResponseDtoSchema = UserEntitySchema.omit({
@@ -29,6 +34,7 @@ export const UserWithAccountSchema = UserResponseDtoSchema.extend({
 
 export type UserEntity = z.infer<typeof UserEntitySchema>;
 export type CreateUserDTO = z.infer<typeof CreateUserDtoSchema>;
+export type LoginUserDTO = z.infer<typeof LoginUserDtoSchema>
 export type UpdateUserDTO = z.infer<typeof UpdateUserDtoSchema>;
 export type UserResponseDTO = z.infer<typeof UserResponseDtoSchema>;
 export type UserWithAccountDTO = z.infer<typeof UserWithAccountSchema>;
