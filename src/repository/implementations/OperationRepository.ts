@@ -5,52 +5,53 @@ import type { DepositDTO, WithdrawDTO, TransferDTO } from "../../model/Operation
 
 export class OperationRepository implements Repository<CreateOperationDTO, any, OperationEntity> {
 
-    async deposit(data: DepositDTO): Promise<OperationEntity> {
+    async deposit(operationId: string ,accountId: string, data: DepositDTO): Promise<OperationEntity> {
         const [operation] = await prisma.$transaction([
             prisma.operation.create({
                 data: {
-                    accountId: data.accountId,
+                    accountId: accountId,
                     type: 'DEPOSIT',
                     amount: data.amount,
-                    description: data.description ?? "Depósito realizado"
+                    description: data.description ?? "Depósito realizado",
+                    transactionId: operationId
                 }
             }),
             prisma.account.update({
-                where: { id: data.accountId },
+                where: { id: accountId },
                 data: { balance: { increment: data.amount } }
             })
         ]);
-        return operation as OperationEntity;
+        return operation as any as OperationEntity
     }
 
-    async withdraw(data: WithdrawDTO): Promise<OperationEntity> {
+    async withdraw(operationId: string, accountId: string, data: WithdrawDTO): Promise<OperationEntity> {
         const [operation] = await prisma.$transaction([
             prisma.operation.create({
                 data: {
-                    accountId: data.accountId,
+                    accountId: accountId,
                     type: 'WITHDRAW',
                     amount: data.amount,
-                    description: data.description ?? "Saque realizado"
+                    description: data.description ?? "Saque realizado",
+                    transactionId: operationId
                 }
             }),
             prisma.account.update({
-                where: { id: data.accountId },
+                where: { id: accountId },
                 data: { balance: { decrement: data.amount } }
             })
         ]);
-        return operation as OperationEntity;
+        return operation as any as OperationEntity
     }
 
-    async transfer(data: TransferDTO): Promise<OperationEntity> {
-        const transactionId = crypto.randomUUID();
+    async transfer(operationId: string, senderAccountId: string, data: TransferDTO): Promise<OperationEntity> {
 
         const [senderOp] = await prisma.$transaction([
             prisma.operation.create({
                 data: {
-                    accountId: data.senderAccountId,
+                    accountId: senderAccountId,
                     type: 'TRANSFER_OUT',
                     amount: data.amount,
-                    transactionId,
+                    transactionId: operationId,
                     description: data.description ?? `Transferência para conta ${data.receiverAccountId}`
                 }
             }),
@@ -59,12 +60,12 @@ export class OperationRepository implements Repository<CreateOperationDTO, any, 
                     accountId: data.receiverAccountId,
                     type: 'TRANSFER_IN',
                     amount: data.amount,
-                    transactionId,
-                    description: data.description ?? `Transferência recebida de ${data.senderAccountId}`
+                    transactionId: operationId,
+                    description: data.description ?? `Transferência recebida de ${senderAccountId}`
                 }
             }),
             prisma.account.update({
-                where: { id: data.senderAccountId },
+                where: { id: senderAccountId },
                 data: { balance: { decrement: data.amount } }
             }),
             prisma.account.update({
@@ -73,14 +74,14 @@ export class OperationRepository implements Repository<CreateOperationDTO, any, 
             })
         ]);
 
-        return senderOp as OperationEntity;
+        return senderOp as any as OperationEntity
     }
 
     async create(data: CreateOperationDTO) {
         const operationCreated = await prisma.operation.create({
             data 
         });
-        return operationCreated as OperationEntity;
+        return operationCreated as any as OperationEntity
     }
 
     async findById(id: string) {
@@ -94,7 +95,7 @@ export class OperationRepository implements Repository<CreateOperationDTO, any, 
         const allOperations = await prisma.operation.findMany({
             orderBy: { createdAt: 'desc' }
         })
-        return allOperations;
+        return allOperations as any as OperationEntity[]
     }
 
     async update(id: string, data: any): Promise<OperationEntity> {
