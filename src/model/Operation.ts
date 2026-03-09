@@ -10,7 +10,7 @@ export const OperationEntitySchema = z.object({
     amount: z.coerce.number().positive("O valor deve ser positivo"),
     description: z.string().nullable(),
     transactionId: z.string().nullable(),
-    relatedAccountId: z.uuid().nullable(),
+    relatedAccountId: z.uuid().nullable().optional(),
     createdAt: z.date(),
 });
 
@@ -20,7 +20,6 @@ export const CreateOperationDtoSchema = OperationEntitySchema.omit({
 });
 
 export const DepositDtoSchema = z.object({
-  accountId: z.string().uuid(),
   amount: z.coerce.number().positive("O valor deve ser positivo"),
   description: z.string().optional(),
 });
@@ -28,14 +27,10 @@ export const DepositDtoSchema = z.object({
 export const WithdrawDtoSchema = DepositDtoSchema;
 
 export const TransferDtoSchema = z.object({
-  senderAccountId: z.uuid(),
   receiverAccountId: z.uuid(),
   amount: z.coerce.number().positive(),
   description: z.string().optional(),
-}).refine(data => data.senderAccountId !== data.receiverAccountId, {
-  message: "Contas de origem e destino devem ser diferentes",
-  path: ["receiverAccountId"]
-});
+})
 
 export type OperationEntity = z.infer<typeof OperationEntitySchema>;
 export type CreateOperationDTO = z.infer<typeof CreateOperationDtoSchema>

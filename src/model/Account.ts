@@ -29,3 +29,4 @@ export type AccountEntity = z.infer<typeof AccountEntitySchema>;
 export type CreateAccountDTO = z.infer<typeof CreateAccountDtoSchema>;
 export type UpdateAccountDTO = z.infer<typeof UpdateAccountBalanceDtoSchema>
 export type AccountResponseDTO = z.infer<typeof AccountResponseDtoSchema>;
+export type accountWithOperationsDTO = z.infer<typeof AccountWithOperationsSchema>
