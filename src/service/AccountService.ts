@@ -1,3 +1,4 @@
+import { AppError } from "../errors/AppError.js";
 import { AccountWithOperationsSchema, type accountWithOperationsDTO } from "../model/Account.js";
 import type { AccountRepository } from "../repository/implementations/AccountRepository.js";
 
@@ -6,13 +7,13 @@ export class AccountService {
 
     async getStatement(id: string): Promise<accountWithOperationsDTO> {
         const allOperations = await this.accountRepository.getAccountStatement(id)
-        if (!allOperations) throw new Error("Conta não encontrada")
+        if (!allOperations) throw new AppError("Conta não encontrada", 404)
         return AccountWithOperationsSchema.parse(allOperations)
     }
 
     async getAccountByUser(id: string) {
         const user = await this.accountRepository.findByUser(id)
-        if (!user) throw new Error("Usuario não existe")
+        if (!user) throw new AppError("Usuario não existe", 404)
         return user.id
     }
 

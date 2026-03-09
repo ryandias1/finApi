@@ -3,6 +3,7 @@ import type { UserRepository } from "../repository/implementations/UserRepositor
 import { hash, compare } from "bcrypt";
 import "dotenv/config"
 import { generateToken } from "../utils/TokenService.js";
+import { AppError } from "../errors/AppError.js";
 
 export class UserService {
     constructor(private readonly userRepository: UserRepository) {}
@@ -19,11 +20,11 @@ export class UserService {
         const { email, password } = user
         const userExists = await this.userRepository.findByEmail(email)
         if (!userExists) {
-            throw new Error("User não existe")
+            throw new AppError("Email ou senha incorretos", 401)
         }
         const passwordCorrect = await compare(password, userExists.password);
         if (!passwordCorrect) {
-            throw new Error("Email ou senha incorretos")
+            throw new AppError("Email ou senha incorretos", 401)
         }
         const token = generateToken(userExists.id)
         return token

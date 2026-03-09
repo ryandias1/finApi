@@ -1,7 +1,7 @@
+import { AppError } from "../errors/AppError.js";
 import { OperationEntitySchema, type DepositDTO, type TransferDTO, type WithdrawDTO } from "../model/Operation.js";
 import type { OperationRepository } from "../repository/implementations/OperationRepository.js";
 import { AccountService } from "./AccountService.js";
-import type { UserService } from "./UserService.js";
 import { randomUUID } from "node:crypto";
 
 export class OperationService {
@@ -11,8 +11,6 @@ export class OperationService {
     ) {}
 
     async deposit(id: string, depositDto: DepositDTO) {
-        const { amount  } = depositDto
-        if (amount <= 0) throw new Error("Valor invalido para deposito")
         const accountId = await this.accountService.getAccountByUser(id)
         const operationId = randomUUID()
         const operation = await this.operationRepository.deposit(operationId, accountId, depositDto)
@@ -20,11 +18,10 @@ export class OperationService {
     }
 
     async withdraw(id: string, withdrawDto: WithdrawDTO) {
-        const { amount  } = withdrawDto
-        if (amount <= 0) throw new Error("Valor invalido para saque")
+        const { amount } = withdrawDto
         const accountId = await this.accountService.getAccountByUser(id)
         const balance = await this.accountService.getBalance(accountId)
-        if (amount > balance) throw new Error("Saldo insuficiente")
+        if (amount > balance) throw new AppError("Saldo insuficiente", 422)
         const operationId = randomUUID()
         const operation = await this.operationRepository.withdraw(operationId,accountId, withdrawDto)
         return OperationEntitySchema.parse(operation)
@@ -32,10 +29,9 @@ export class OperationService {
 
     async transfer(userSenderId: string, transferDto: TransferDTO) {
         const { amount } = transferDto
-        if (amount <= 0) throw new Error("Valor invalido para transferencia")
         const accountSenderId = await this.accountService.getAccountByUser(userSenderId)
         const balance = await this.accountService.getBalance(accountSenderId)
-        if (amount > balance) throw new Error("Saldo insuficiente")
+        if (amount > balance) throw new AppError("Saldo insuficiente", 422)
         const operationId = randomUUID()
         const transfer = await this.operationRepository.transfer(operationId, accountSenderId, transferDto)
         return OperationEntitySchema.parse(transfer)
