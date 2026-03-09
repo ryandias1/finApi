@@ -15,4 +15,9 @@ export class AccountService {
         if (!user) throw new Error("Usuario não existe")
         return user.id
     }
+
+    async getBalance(id: string) {
+        const account = await this.accountRepository.findById(id)
+        return account.balance
+    }
 }
