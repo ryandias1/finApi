@@ -36,7 +36,7 @@ export class OperationRepository implements Repository<CreateOperationDTO, any, 
                 }
             }),
             prisma.account.update({
-                where: { id: accountId },
+                where: { id: accountId, balance: { gte: data.amount } },
                 data: { balance: { decrement: data.amount } }
             })
         ]);
@@ -65,7 +65,7 @@ export class OperationRepository implements Repository<CreateOperationDTO, any, 
                 }
             }),
             prisma.account.update({
-                where: { id: senderAccountId },
+                where: { id: senderAccountId, balance: { gte: data.amount } },
                 data: { balance: { decrement: data.amount } }
             }),
             prisma.account.update({
