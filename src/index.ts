@@ -17,7 +17,7 @@ const accountService = new AccountService(accountRepository)
 const accountController = new AccountController(accountService)
 
 const operationRepository = new OperationRepository()
-const operationService = new OperationService(operationRepository, userService, accountService)
+const operationService = new OperationService(operationRepository, accountService)
 const operationController = new OperationController(operationService)
 
 
